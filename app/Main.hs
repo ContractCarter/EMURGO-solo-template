@@ -6,7 +6,7 @@ import Types
 
 
     main :: IO ()
-main = do
+    main = do
     hSetBuffering stdin NoBuffering
     hSetEcho stdin False
     clearScreen
