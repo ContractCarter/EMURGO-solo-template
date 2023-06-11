@@ -1,7 +1,7 @@
 module Lib where
 
 import Types
-
+import System.Random
 
 move :: Direction -> Position -> Position
 move dir (r, c) = case dir of
