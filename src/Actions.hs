@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Actions where
 
 import System.IO
@@ -6,6 +7,8 @@ import Control.Monad
 import Control.Concurrent
 import Control.Concurrent.STM
 import Control.Concurrent.Async
+import Types
+import Lib
 
 printLogo :: IO ()
 printLogo = do
