@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Lib where
 
 import Types
