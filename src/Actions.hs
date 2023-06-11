@@ -10,6 +10,8 @@ import Control.Concurrent.Async
 import Types
 import Lib
 
+<pre>
+```haskell
 printLogo :: IO ()
 printLogo = do
     putStrLn "                        /^\/^\                                       "
@@ -34,6 +36,9 @@ printLogo = do
     putStrLn "                         ~-_           _-~          ~-_       _-~    "
     putStrLn "                            ~--______-~                ~-___-~       "   
     putStrLn "                                                                     "
+```
+</pre>
+
     
     
 commandLoop :: TQueue Command -> IO ()
