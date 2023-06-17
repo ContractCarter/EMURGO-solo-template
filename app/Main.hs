@@ -16,6 +16,9 @@ import Control.Concurrent.Async
     hSetEcho stdin False
     clearScreen
     printLogo
+    putStrLn "Press any key to start..."
+    _ <- getChar
+    clearScreen
     commands <- newTQueueIO
     worldVar <- newTVarIO (initGame $ mkStdGen 0)
     withAsync (commandLoop commands) $ \_ -> gameLoop commands worldVar
