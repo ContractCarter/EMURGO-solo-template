@@ -3,7 +3,7 @@ module Types where
 import System.Random
 
 
-data Direction = Up | Down | Left | Right deriving (Eq, Enum)
+data Direction = U | D | L | R deriving (Eq, Enum)
 
 
 data Command = Exit | Move Direction deriving (Eq)
