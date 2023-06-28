@@ -6,11 +6,10 @@ import System.Random
 
 move :: Direction -> Position -> Position
 move dir (r, c) = case dir of
-    Main.Up -> (r - 1, c)
-    Main.Down -> (r + 1, c)
-    Main.Left -> (r, c - 1)
-    Main.Right -> (r, c + 1)
-    
+    U -> (r - 1, c)
+    D -> (r + 1, c)
+    L -> (r, c - 1)
+    R -> (r, c + 1)
 
 advance :: GameState -> Command -> GameState
 advance (Game world@World{snake, food, direction, randomGen, bounds} score) cmd = case cmd of
@@ -26,10 +25,8 @@ advance (Game world@World{snake, food, direction, randomGen, bounds} score) cmd 
           newGame = Game (world {snake = newSnake, food = newFood, direction = newDirection, randomGen = newRand}) (score + length newSnake)
 advance game _ = game
 
-
 opposite :: Direction -> Direction
 opposite dir = toEnum $ (fromEnum dir + 2) `mod` 4
-
 
 randomPosition :: (Int, Int) -> StdGen -> Position
 randomPosition (maxr, maxc) g = 
@@ -37,29 +34,25 @@ randomPosition (maxr, maxc) g =
         (c, _) = randomR (1, maxc) g1
     in (r, c)
 
-
 outOfBounds :: (Int, Int) -> Position -> Bool
 outOfBounds (maxr, maxc) (r, c) = r < 1 || r > maxr || c < 1 || c > maxc
-
 
 initWorld :: StdGen -> World
 initWorld g = World { snake = [(10, x)| x <- [20,19..15]],
                       food = (10, 10),
-                      direction = Main.Right,
+                      direction = R,
                       randomGen = g,
                       bounds = (20, 40)
                     }
 
-
 initGame :: StdGen -> GameState
 initGame = Game . initWorld
-
 
 parseCommand :: Char -> Maybe Command
 parseCommand ch = case ch of
     'q' -> Just Exit
-    'w' -> Just $ Move Main.Up
-    'a' -> Just $ Move Main.Left
-    's' -> Just $ Move Main.Down
-    'd' -> Just $ Move Main.Right
+    'w' -> Just $ Move U
+    'a' -> Just $ Move L
+    's' -> Just $ Move D
+    'd' -> Just $ Move R
     _   -> Nothing
