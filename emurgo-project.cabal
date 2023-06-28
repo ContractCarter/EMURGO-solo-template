@@ -24,7 +24,7 @@ executable emurgo-project
                     , Types
 
     build-depends:
-        base ^>=4.14.1.0
+        base ^>=4.14.1.0,
         ansi-terminal,
         random,
         stm,
