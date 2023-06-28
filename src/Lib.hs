@@ -46,7 +46,8 @@ initWorld g = World { snake = [(10, x)| x <- [20,19..15]],
                     }
 
 initGame :: StdGen -> GameState
-initGame = Game . initWorld
+initGame = Game <$> initWorld
+
 
 parseCommand :: Char -> Maybe Command
 parseCommand ch = case ch of
