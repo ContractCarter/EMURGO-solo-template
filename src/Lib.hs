@@ -20,7 +20,8 @@ advance (Game world@World{snake, food, direction, randomGen, bounds} score) cmd 
           newHead = move newDirection (head snake)
           collision = newHead `elem` snake || outOfBounds bounds newHead
           (newSnake, newFood, newRand) = if newHead == food
-                                         then (newHead : snake, randomPosition bounds randomGen, snd $ next randomGen)
+                                         then let (newFoodPosition, newGen) = randomPosition bounds randomGen 
+                                              in (newHead : snake, newFoodPosition, newGen)
                                          else (newHead : init snake, food, randomGen)
           newGame = Game (world {snake = newSnake, food = newFood, direction = newDirection, randomGen = newRand}) (score + length newSnake)
 advance game _ = game
@@ -28,11 +29,12 @@ advance game _ = game
 opposite :: Direction -> Direction
 opposite dir = toEnum $ (fromEnum dir + 2) `mod` 4
 
-randomPosition :: (Int, Int) -> StdGen -> Position
+randomPosition :: (Int, Int) -> StdGen -> (Position, StdGen)
 randomPosition (maxr, maxc) g = 
     let (r, g1) = randomR (1, maxr) g
-        (c, _) = randomR (1, maxc) g1
-    in (r, c)
+        (c, g2) = randomR (1, maxc) g1
+    in ((r, c), g2)
+
 
 outOfBounds :: (Int, Int) -> Position -> Bool
 outOfBounds (maxr, maxc) (r, c) = r < 1 || r > maxr || c < 1 || c > maxc
