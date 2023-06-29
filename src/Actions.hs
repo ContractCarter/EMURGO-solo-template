@@ -46,16 +46,19 @@ commandLoop commands = forever $ do
 gameLoop :: TQueue Command -> TVar GameState -> IO ()
 gameLoop commands worldVar = loop where
     loop = do
-        world <- readTVarIO worldVar
+        gameState <- readTVarIO worldVar
         maybeCmd <- atomically $ tryReadTQueue commands
-        let cmd = maybe (Move $ direction $ world $ world) id maybeCmd
-        let newWorld = advance world cmd
+        let cmd = case gameState of
+              Game world _ -> maybe (Move $ direction world) id maybeCmd
+              GameOver _ -> maybe Exit id maybeCmd
+        let newWorld = advance gameState cmd
         atomically $ writeTVar worldVar newWorld
         clearScreen
         renderWorld newWorld
         case newWorld of
             GameOver score -> putStrLn $ "Game Over! Your score: " ++ show score
             _ -> threadDelay 100000 >> loop
+
 
 renderWorld :: GameState -> IO ()
 renderWorld (Game World{snake, food} score) = do
