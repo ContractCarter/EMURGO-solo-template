@@ -43,6 +43,7 @@ commandLoop commands = forever $ do
     cmd <- parseCommand <$> getChar
     maybe (return ()) (atomically . writeTQueue commands) cmd
 
+
 gameLoop :: TQueue Command -> TVar GameState -> IO ()
 gameLoop commands worldVar = loop where
     loop = do
