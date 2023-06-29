@@ -9,6 +9,9 @@ import System.Console.ANSI
 import System.Random
 import Control.Concurrent.STM
 import Control.Concurrent.Async
+import Control.Monad 
+import Control.Concurrent
+
 
 main :: IO ()
 main = do
