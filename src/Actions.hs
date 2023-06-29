@@ -44,18 +44,18 @@ commandLoop commands = forever $ do
     maybe (return ()) (atomically . writeTQueue commands) cmd
 
 gameLoop :: TQueue Command -> TVar GameState -> IO ()
-gameLoop commands worldVar = loop
-    where
-        loop = do
-            cmd <- atomically $ readTQueue commands
-            world <- readTVarIO worldVar
-            let newWorld = advance world cmd
-            atomically $ writeTVar worldVar newWorld
-            clearScreen
-            renderWorld newWorld
-            case newWorld of
-                GameOver score -> putStrLn $ "Game Over! Your score: " ++ show score
-                _ -> loop
+gameLoop commands worldVar = loop where
+    loop = do
+        world <- readTVarIO worldVar
+        maybeCmd <- atomically $ tryReadTQueue commands
+        let cmd = maybe (Move $ direction $ world $ world) id maybeCmd
+        let newWorld = advance world cmd
+        atomically $ writeTVar worldVar newWorld
+        clearScreen
+        renderWorld newWorld
+        case newWorld of
+            GameOver score -> putStrLn $ "Game Over! Your score: " ++ show score
+            _ -> threadDelay 100000 >> loop
 
 renderWorld :: GameState -> IO ()
 renderWorld (Game World{snake, food} score) = do
