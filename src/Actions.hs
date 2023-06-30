@@ -37,38 +37,50 @@ printLogo = do
 
 
     
-    
 commandLoop :: TQueue Command -> IO ()
 commandLoop commands = forever $ do
-    cmd <- parseCommand <$> getChar
-    maybe (return ()) (atomically . writeTQueue commands) cmd
-
+  cmd <- parseCommand <$> getChar
+  maybe (return ()) (atomically . writeTQueue commands) cmd
 
 gameLoop :: TQueue Command -> TVar GameState -> IO ()
-gameLoop commands worldVar = loop where
+gameLoop commands worldVar = loop
+  where
     loop = do
-        gameState <- readTVarIO worldVar
-        maybeCmd <- atomically $ tryReadTQueue commands
-        let cmd = case gameState of
-              Game world _ -> maybe (Move $ direction world) id maybeCmd
-              GameOver _ -> maybe Exit id maybeCmd
-        let newWorld = advance gameState cmd
-        atomically $ writeTVar worldVar newWorld
-        clearScreen
-        renderWorld newWorld
-        case newWorld of
-            GameOver score -> putStrLn $ "Game Over! Your score: " ++ show score
-            _ -> threadDelay 100000 >> loop
-
+      gameState <- readTVarIO worldVar
+      maybeCmd <- atomically $ tryReadTQueue commands
+      let cmd = case gameState of
+            Game world _ -> maybe (Move $ direction world) id maybeCmd
+            GameOver _ -> maybe Exit id maybeCmd
+          newWorld = advance gameState cmd
+      atomically $ writeTVar worldVar newWorld
+      clearScreen
+      renderWorld newWorld
+      case newWorld of
+        GameOver score -> putStrLn $ "Game Over! Your score: " ++ show score
+        _ -> threadDelay 100000 >> loop
 
 renderWorld :: GameState -> IO ()
-renderWorld (Game World{snake, food} score) = do
-    putStrLn $ "Score: " ++ show score
-    forM_ snake $ \(x, y) -> do
-        setCursorPosition x y
-        putChar '*'
-    let (fx, fy) = food
-    setCursorPosition fx fy
-    putChar '#'
+renderWorld (Game World{snake, food, bounds} score) = do
+  putStrLn $ "Score: " ++ show score
+  forM_ snake $ \(x, y) -> do
+    setCursorPosition x y
+    putChar '*'
+  let (fx, fy) = food
+  setCursorPosition fx fy
+  putChar '#'
+
+  -- Draw border
+  let (maxr, maxc) = bounds
+  forM_ [1 .. maxr] $ \r -> do
+    setCursorPosition r 1
+    putChar '|'
+    setCursorPosition r maxc
+    putChar '|'
+  forM_ [1 .. maxc] $ \c -> do
+    setCursorPosition 1 c
+    putChar '-'
+    setCursorPosition maxr c
+    putChar '-'
 renderWorld (GameOver _) = return ()
+
    
